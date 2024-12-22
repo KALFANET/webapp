@@ -1,33 +1,46 @@
-import React from 'react';
-import { Box, Card, CardContent, Typography, IconButton, Grid2 as Grid } from '@mui/material';
-import { FileCopy } from '@mui/icons-material';
-import Chart from "react-apexcharts";
-import DashboardPage from './pages/Dashboard';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Dashboard.css';
 
-function DashboardPage() {
-    const chartOptions = {
-        options: { /* ... */ },
-        series: [{ name: 'Uploaded Files', data: [10, 20, 15, 30] }],
-    };
+const Dashboard = () => {
+  const [files, setFiles] = useState([
+    { id: 1, name: 'doc1.pdf', status: 'Ready for Processing', size: 2 },
+    { id: 2, name: 'doc2.pdf', status: 'Ready to Send', size: 3.5 },
+  ]);
 
-    return (
-        <Box>
-            <Typography>Welcome to the Dashboard</Typography>
-            <Grid container spacing={3}>
-                <Grid item>
-                    <Card>
-                        <IconButton><FileCopy /></IconButton>
-                        <CardContent>
-                            <Typography>Files Processed</Typography>
-                            <Typography>150</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                {/* More cards */}
-            </Grid>
-            <Chart options={chartOptions.options} series={chartOptions.series} type="bar" />
-        </Box>
-    );
-}
+  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
 
-export default DashboardPage;
+  const handleProcessFiles = () => {
+    alert('OCR Processing Started');
+  };
+
+  return (
+    <div className="dashboard-container">
+      <h1>Dashboard</h1>
+      <div className="files-section">
+        <h3>Files Overview</h3>
+        <ul>
+          {files.map((file) => (
+            <li key={file.id}>
+              <span>{file.name}</span>
+              <span>Status: {file.status}</span>
+              <span>Size: {file.size}MB</span>
+            </li>
+          ))}
+        </ul>
+        <div className="actions">
+          <button onClick={handleProcessFiles}>Process Files</button>
+          <Link to="/upload">
+            <button>Upload New File</button>
+          </Link>
+        </div>
+      </div>
+      <div className="stats">
+        <p>Total Files: {files.length}</p>
+        <p>Total Size: {totalSize} MB</p>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

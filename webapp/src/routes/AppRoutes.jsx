@@ -7,6 +7,7 @@ import Library from '../pages/Library';
 import Results from '../pages/Results';
 import Users from '../pages/Users';
 import Login from '../pages/Login';
+import Upload from '../components/UploadFile';
 
 const AppRoutes = () => {
     return (
@@ -18,6 +19,8 @@ const AppRoutes = () => {
             <Route path="/library" element={<Library />} />
             <Route path="/results" element={<Results />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/Upload" element={<Upload />} />
+
         </Routes>
     );
 };
