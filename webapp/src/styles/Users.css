@@ -1,0 +1,72 @@
+.users-container {
+  padding: 20px;
+}
+
+h1, h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.user-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.user-card h3 {
+  margin: 0 0 10px;
+}
+
+.user-card p {
+  margin: 0 0 20px;
+}
+
+.user-card button {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.user-card button:hover {
+  background-color: #ff7875;
+}
+
+.add-user-form {
+  margin-top: 40px;
+}
+
+.add-user-form input,
+.add-user-form select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-user-form button {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-user-form button:hover {
+  background-color: #40a9ff;
+}

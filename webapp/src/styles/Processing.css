@@ -1,0 +1,18 @@
+.processing {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  h2 {
+    color: #343a40;
+  }
+  
+  .processing ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .processing li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
