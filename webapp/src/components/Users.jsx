@@ -2,13 +2,8 @@ import React, { useState } from 'react';
 import { hashPassword } from '../utils/encryption';
 import '../styles/Users.css';
 
-const initialUsers = [
-  { id: 1, name: 'John Doe', role: 'Admin', password: hashPassword('password123') },
-  { id: 2, name: 'Jane Smith', role: 'User', password: hashPassword('mypassword') },
-];
-
 const Users = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', role: 'User', password: '' });
 
   const handleAddUser = () => {
@@ -30,7 +25,7 @@ const Users = () => {
 
   return (
     <div className="users-container">
-      <h1>Users Management</h1>
+      <h1>Users Management (Local)</h1>
       <div className="users-grid">
         {users.map((user) => (
           <div key={user.id} className="user-card">
@@ -40,7 +35,6 @@ const Users = () => {
           </div>
         ))}
       </div>
-
       <div className="add-user-form">
         <h2>Add New User</h2>
         <input

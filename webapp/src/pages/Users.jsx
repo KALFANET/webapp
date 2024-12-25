@@ -1,32 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getUsers, addUser, deleteUser } from '../api/usersApi';
 import '../styles/Users.css';
 
-const initialUsers = [
-  { id: 1, name: 'John Doe', role: 'Admin' },
-  { id: 2, name: 'Jane Smith', role: 'User' },
-  { id: 3, name: 'Bob Viewer', role: 'Viewer' },
-];
-
 const Users = () => {
-  const [users, setUsers] = useState(initialUsers);
-  const [newUser, setNewUser] = useState({ name: '', role: 'User' });
+  const [users, setUsers] = useState([]);
+  const [newUser, setNewUser] = useState({ name: '', role: 'User', password: '' });
+  const [error, setError] = useState('');
 
-  const handleAddUser = () => {
-    if (!newUser.name) return;
-    const user = { id: Date.now(), ...newUser };
-    setUsers([...users, user]);
-    setNewUser({ name: '', role: 'User' });
+  // קבלת משתמשים מהשרת
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const users = await getUsers(token);
+      setUsers(users);
+    } catch (err) {
+      setError('Error fetching users. Please try again.');
+    }
   };
 
-  const handleDeleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  // הוספת משתמש חדש
+  const handleAddUser = async () => {
+    if (!newUser.name || !newUser.password) {
+      setError('Name and password are required.');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const addedUser = await addUser(newUser, token);
+      setUsers([...users, addedUser]);
+      setNewUser({ name: '', role: 'User', password: '' });
+    } catch (err) {
+      setError('Error adding user. Please try again.');
+    }
   };
+
+  // מחיקת משתמש
+  const handleDeleteUser = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await deleteUser(id, token);
+      setUsers(users.filter((user) => user.id !== id));
+    } catch (err) {
+      setError('Error deleting user. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
-    <div className="users">
+    <div className="users-page">
       <h2>Manage Users</h2>
-
-      {/* פריסה מבוססת גריד */}
+      {error && <p className="error">{error}</p>}
       <div className="users-grid">
         {users.map((user) => (
           <div key={user.id} className="user-card">
@@ -36,8 +62,6 @@ const Users = () => {
           </div>
         ))}
       </div>
-
-      {/* טופס הוספת משתמש */}
       <div className="add-user-form">
         <h2>Add New User</h2>
         <input
@@ -54,6 +78,12 @@ const Users = () => {
           <option value="User">User</option>
           <option value="Viewer">Viewer</option>
         </select>
+        <input
+          type="password"
+          placeholder="Password"
+          value={newUser.password}
+          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+        />
         <button onClick={handleAddUser}>Add User</button>
       </div>
     </div>

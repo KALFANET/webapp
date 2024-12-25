@@ -10,8 +10,18 @@ const Dashboard = () => {
 
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
 
-  const handleProcessFiles = () => {
-    alert('OCR Processing Started');
+  const handleProcessFiles = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/files/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files }),
+      });
+      const result = await response.json();
+      alert(`Processing Complete: ${result.message}`);
+    } catch (error) {
+      alert('Error processing files.');
+    }
   };
 
   return (
