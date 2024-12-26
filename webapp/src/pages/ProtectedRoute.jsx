@@ -1,15 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Navigate } from "react-router-dom";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = Boolean(localStorage.getItem("token"));
-
-  return isLoggedIn ? children : <Navigate to="/login" />;
-};
-
-ProtectedRoute.propTypes = {
-  children: PropTypes.node.isRequired,
+    const isAuthenticated = localStorage.getItem('token'); // בדיקת אם יש טוקן
+    if (!isAuthenticated) {
+        alert('You are not authorized to access this page. Please log in.');
+    }
+    return isAuthenticated ? children : <Navigate to="/" />;
 };
 
 export default ProtectedRoute;

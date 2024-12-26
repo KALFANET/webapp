@@ -32,4 +32,4 @@ const Upload = () => {
   );
 };
 
-export default FileUpload;
+export default Upload;

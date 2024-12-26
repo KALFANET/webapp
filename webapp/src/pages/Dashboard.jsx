@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { fetchUsers, uploadFile } from '../../src/api/dashboardApi';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -7,26 +7,37 @@ const Dashboard = () => {
     { id: 1, name: 'doc1.pdf', status: 'Ready for Processing', size: 2 },
     { id: 2, name: 'doc2.pdf', status: 'Ready to Send', size: 3.5 },
   ]);
+  const [file, setFile] = useState(null);
 
-  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  // טעינת רשימת משתמשים
+  useEffect(() => {
+    fetchUsers()
+      .then((data) => {
+        console.log('Users loaded successfully');
+      })
+      .catch((error) => console.error('Error fetching users:', error));
+  }, []);
 
-  const handleProcessFiles = async () => {
+  // העלאת קובץ
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert('Please select a file first');
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:5000/api/files/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files }),
-      });
-      const result = await response.json();
-      alert(`Processing Complete: ${result.message}`);
+      const response = await uploadFile(file);
+      alert(`File uploaded: ${response.message}`);
     } catch (error) {
-      alert('Error processing files.');
+      console.error('Error uploading file:', error);
     }
   };
 
   return (
     <div className="dashboard-container">
       <h1>Dashboard</h1>
+
+      {/* קטע הצגת קבצים */}
       <div className="files-section">
         <h3>Files Overview</h3>
         <ul>
@@ -39,15 +50,15 @@ const Dashboard = () => {
           ))}
         </ul>
         <div className="actions">
-          <button onClick={handleProcessFiles}>Process Files</button>
-          <Link to="/upload">
-            <button>Upload New File</button>
-          </Link>
+          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+          <button onClick={handleFileUpload}>Upload File</button>
         </div>
       </div>
+
+      {/* סטטיסטיקות */}
       <div className="stats">
         <p>Total Files: {files.length}</p>
-        <p>Total Size: {totalSize} MB</p>
+        <p>Total Size: {files.reduce((acc, file) => acc + file.size, 0)} MB</p>
       </div>
     </div>
   );

@@ -1,55 +1,78 @@
-import React, { useState } from 'react';
-import { hashPassword } from '../utils/encryption';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { API_URL } from '../config/apiConfig';
 import '../styles/Users.css';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({ name: '', role: 'User', password: '' });
+  const [newUser, setNewUser] = useState({ name: '', role: '', password: '' });
+  const [error, setError] = useState('');
 
-  const handleAddUser = () => {
-    if (!newUser.name) {
-      alert('Please enter a name.');
-      return;
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/users`);
+      setUsers(response.data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      setError('Failed to fetch users');
     }
-    if (!newUser.password || newUser.password.length < 6) {
-      alert('Password must be at least 6 characters.');
-      return;
-    }
-
-    const hashedPassword = hashPassword(newUser.password);
-    const user = { id: Date.now(), ...newUser, password: hashedPassword };
-
-    setUsers([...users, user]);
-    setNewUser({ name: '', role: 'User', password: '' });
   };
+
+  const handleAddUser = async () => {
+    if (!newUser.name || !newUser.role || !newUser.password) {
+      setError('All fields are required');
+      return;
+    }
+    try {
+      const response = await axios.post(`${API_URL}/api/users`, newUser);
+      setUsers([...users, response.data]);
+      setNewUser({ name: '', role: '', password: '' });
+      setError('');
+    } catch (err) {
+      console.error('Error adding user:', err);
+      setError('Failed to add user');
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/api/users/${id}`);
+      setUsers(users.filter((user) => user.id !== id));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      setError('Failed to delete user');
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <div className="users-container">
-      <h1>Users Management (Local)</h1>
-      <div className="users-grid">
+      {error && <p className="error">{error}</p>}
+      <ul>
         {users.map((user) => (
-          <div key={user.id} className="user-card">
-            <h3>{user.name}</h3>
-            <p>{user.role}</p>
-            <button onClick={() => setUsers(users.filter((u) => u.id !== user.id))}>Delete</button>
-          </div>
+          <li key={user.id}>
+            {user.name} ({user.role})
+            <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
+          </li>
         ))}
-      </div>
+      </ul>
       <div className="add-user-form">
-        <h2>Add New User</h2>
+        <h3>Add New User</h3>
         <input
           type="text"
           placeholder="Name"
           value={newUser.name}
           onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
         />
-        <select
+        <input
+          type="text"
+          placeholder="Role"
           value={newUser.role}
           onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-        >
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
-        </select>
+        />
         <input
           type="password"
           placeholder="Password"
