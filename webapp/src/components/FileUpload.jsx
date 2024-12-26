@@ -1,35 +1,28 @@
-import React, { useState } from 'react';
-import '../styles/upload.css';
+import React, { useState } from "react";
 
-const Upload = () => {
+const FileUpload = () => {
   const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('');
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
 
-  const handleUpload = () => {
-    if (file) {
-      setUploadStatus(`File "${file.name}" uploaded successfully.`);
-    } else {
-      setUploadStatus('Please select a file first.');
-    }
+    const response = await fetch("/api/files/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    alert(data.message);
   };
 
   return (
-    <div className="upload-container">
-      <h1>Upload File</h1>
-      <input type="file" onChange={handleFileChange} />
-      {file && (
-        <div className="file-preview">
-          <p>Selected File: {file.name}</p>
-        </div>
-      )}
-      <button onClick={handleUpload}>Upload</button>
-      {uploadStatus && <p>{uploadStatus}</p>}
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+      <button type="submit">Upload</button>
+    </form>
   );
 };
 
-export default Upload;
+export default FileUpload;
